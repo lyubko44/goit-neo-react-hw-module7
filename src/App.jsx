@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import ContactList from './components/ContactList/ContactList.jsx'
+import { useState, useEffect } from 'react';
+import ContactList from './components/ContactList/ContactList.jsx';
 import SearchBox from './components/SearchBox/SearchBox';
 import ContactForm from './components/ContactForm/ContactForm';
 import styles from './App.module.css';
@@ -14,17 +14,30 @@ const App = () => {
 
     const [filter, setFilter] = useState('');
 
-    // Фільтрація контактів
+    // Load contacts from local storage when the app loads
+    useEffect(() => {
+        const storedContacts = JSON.parse(localStorage.getItem('contacts'));
+        if (storedContacts) {
+            setContacts(storedContacts);
+        }
+    }, []);
+
+    // Save contacts to local storage whenever the contacts array changes
+    useEffect(() => {
+        localStorage.setItem('contacts', JSON.stringify(contacts));
+    }, [contacts]);
+
+    // Filter contacts
     const filteredContacts = contacts.filter(contact =>
         contact.name.toLowerCase().includes(filter.toLowerCase())
     );
 
-    // Додавання нового контакту
+    // Add new contact
     const addContact = (newContact) => {
         setContacts(prevContacts => [newContact, ...prevContacts]);
     };
 
-    // Видалення контакту
+    // Delete contact
     const deleteContact = (contactId) => {
         setContacts(prevContacts => prevContacts.filter(contact => contact.id !== contactId));
     };
