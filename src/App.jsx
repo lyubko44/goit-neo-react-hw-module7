@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ContactList from './components/Contact/ContactList';
+import ContactList from './components/ContactList/ContactList.jsx'
 import SearchBox from './components/SearchBox/SearchBox';
 import ContactForm from './components/ContactForm/ContactForm';
 import styles from './App.module.css';
@@ -24,12 +24,17 @@ const App = () => {
         setContacts(prevContacts => [newContact, ...prevContacts]);
     };
 
+    // Видалення контакту
+    const deleteContact = (contactId) => {
+        setContacts(prevContacts => prevContacts.filter(contact => contact.id !== contactId));
+    };
+
     return (
         <div className={styles.app}>
             <h1 className={styles.title}>Phonebook</h1>
             <ContactForm onSubmit={addContact} />
             <SearchBox value={filter} onChange={setFilter} />
-            <ContactList contacts={filteredContacts} />
+            <ContactList contacts={filteredContacts} onDeleteContact={deleteContact} />
         </div>
     );
 };

@@ -1,4 +1,4 @@
-.contactCard {
+.item {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -11,22 +11,18 @@
     width: 300px;
 }
 
-.row {
+.info {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding-right: 40px;
 }
 
 .icon {
-    font-size: 20px;
-    color: #555;
+    margin-right: 8px;
 }
 
-.contactName,
-.contactNumber {
+.name,
+.number {
     font-size: 16px;
-    margin: 0;
 }
 
 .deleteButton {
@@ -43,5 +39,5 @@
 }
 
 .deleteButton:hover {
-    background-color: #ccc;
+    background-color: #f61919;
 }
