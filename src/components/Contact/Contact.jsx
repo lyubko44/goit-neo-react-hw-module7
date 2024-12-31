@@ -10,13 +10,13 @@ const Contact = ({ id, name, number }) => {
     };
 
     return (
-        <li className={styles.item}>
+        <div className={styles.item}>
             <div className={styles.info}>
                 <span className={styles.name}>{name}</span>
                 <span className={styles.number}>{number}</span>
             </div>
             <button onClick={handleDelete} className={styles.deleteButton}>Delete</button>
-        </li>
+        </div>
     );
 };
 
