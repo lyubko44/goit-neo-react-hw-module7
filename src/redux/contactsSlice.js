@@ -1,38 +1,56 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { createSelector } from 'reselect';
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-const initialState = [
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-];
+const API_URL = 'https://677e18f694bde1c1252a58a7.mockapi.io/contacts';
+
+export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async () => {
+    const response = await axios.get(API_URL);
+    return response.data;
+});
+
+export const addContact = createAsyncThunk('contacts/addContact', async (contact) => {
+    const response = await axios.post(API_URL, contact);
+    return response.data;
+});
+
+export const deleteContact = createAsyncThunk('contacts/deleteContact', async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
+    return id;
+});
 
 const contactsSlice = createSlice({
     name: 'contacts',
-    initialState,
-    reducers: {
-        addContact: (state, action) => {
-            state.push(action.payload);
-        },
-        deleteContact: (state, action) => {
-            return state.filter(contact => contact.id !== action.payload);
-        },
+    initialState: {
+        items: [],
+        status: 'idle',
+        error: null,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchContacts.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchContacts.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.items = action.payload;
+            })
+            .addCase(fetchContacts.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(addContact.fulfilled, (state, action) => {
+                state.items.push(action.payload);
+            })
+            .addCase(deleteContact.fulfilled, (state, action) => {
+                state.items = state.items.filter((contact) => contact.id !== action.payload);
+            });
     },
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
-export const selectContacts = (state) => state.contacts;
-export const selectNameFilter = (state) => state.filters.nameFilter;
-
 export const selectFilteredContacts = createSelector(
-    [selectContacts, selectNameFilter],
-    (contacts, nameFilter) => {
-        const filter = nameFilter.toLowerCase();
-        return contacts.filter(contact =>
-            contact.name.toLowerCase().includes(filter)
-        );
-    }
+    (state) => state.contacts.items,
+    (items) => items // Add your filtering logic here if needed
 );
 
 export default contactsSlice.reducer;
