@@ -1,22 +1,5 @@
-import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const API_URL = 'https://677e18f694bde1c1252a58a7.mockapi.io/contacts';
-
-export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
-});
-
-export const addContact = createAsyncThunk('contacts/addContact', async (contact) => {
-    const response = await axios.post(API_URL, contact);
-    return response.data;
-});
-
-export const deleteContact = createAsyncThunk('contacts/deleteContact', async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-    return id;
-});
+import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from './contactsOps';
 
 const contactsSlice = createSlice({
     name: 'contacts',
@@ -25,7 +8,6 @@ const contactsSlice = createSlice({
         loading: false,
         error: null,
     },
-    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchContacts.pending, (state) => {
@@ -38,7 +20,7 @@ const contactsSlice = createSlice({
             })
             .addCase(fetchContacts.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
             .addCase(addContact.pending, (state) => {
                 state.loading = true;
@@ -50,7 +32,7 @@ const contactsSlice = createSlice({
             })
             .addCase(addContact.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
             .addCase(deleteContact.pending, (state) => {
                 state.loading = true;
@@ -62,14 +44,14 @@ const contactsSlice = createSlice({
             })
             .addCase(deleteContact.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             });
     },
 });
 
 export const selectFilteredContacts = createSelector(
     (state) => state.contacts.items,
-    (items) => items // Add your filtering logic here if needed
+    (items) => items
 );
 
 export default contactsSlice.reducer;
